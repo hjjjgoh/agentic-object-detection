@@ -11,3 +11,13 @@ wheels/
 
 # API
 .env
+
+# Data cache
+data/.b64cache/
+
+# Generated output files
+notebook/labeled_objects_*.jpg
+data/output/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
