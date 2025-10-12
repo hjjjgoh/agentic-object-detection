@@ -11,8 +11,10 @@ dependencies = [
     "ipykernel>=6.30.1",
     "jupyterlab>=4.4.9",
     "openai>=2.1.0",
+    "opencv-python>=4.12.0.88",
     "torch==2.4.1",
     "torchvision==0.19.1",
+    "transformers>=4.57.0",
 ]
 
 [project.optional-dependencies]
