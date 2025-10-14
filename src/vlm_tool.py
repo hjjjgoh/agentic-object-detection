@@ -2,7 +2,7 @@ import base64
 import json
 from openai import OpenAI
 
-from utils.image_utils import encode_image
+from src.utils import encode_image
 
 class VLMTool:
     """

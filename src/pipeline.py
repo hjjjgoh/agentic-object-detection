@@ -246,7 +246,7 @@ class ObjectDetectionTool:
         # VLM으로부터 받은 JSON 형식의 문자열 응답 > 파이썬 딕셔너리 
 
 
-def run(self, image_path, user_request, do_critique=True):
+    def run(self, image_path, user_request, do_critique=True):
         """
         Full pipeline:
         1. Extract objects from user request (LLM).
@@ -320,5 +320,3 @@ def run(self, image_path, user_request, do_critique=True):
             f"🔍 Validated objects: {', '.join(set(str(lbl) for _, lbl, _ in filtered_objects))}"
         )
         return final_img, final_text
-
-ObjectDetectionTool._run = run
