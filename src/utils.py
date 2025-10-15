@@ -15,7 +15,10 @@ def encode_image(image_path):
         return None
 
 def draw_arrows_and_numbers(image_path, detected_objects):
-    img = cv2.imread(image_path)
+    """
+    Draws arrows and numbers on an image to label detected objects.
+    """
+    img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     font = cv2.FONT_HERSHEY_SIMPLEX
     used_positions = []
 
@@ -66,9 +69,19 @@ def draw_arrows_and_numbers(image_path, detected_objects):
         cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0, img)
 
         # Draw the number at the border with black text
-        cv2.putText(img, str(num), text_position, font, 0.8, color, 2)
+        cv2.putText(img, str(num), text_position, font, 0.5, color, 2)
 
-    labeled_image_path = "labeled_objects_optimized.jpg"
+    # Create dynamic output path based on input image path
+    base_name = os.path.basename(image_path)
+    name_part, ext_part = os.path.splitext(base_name)
+    output_filename = f"{name_part}_intermediate{ext_part}"
+    
+    # Correctly construct the path to save in the project's output/intermediate directory
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    output_dir = os.path.join(project_root, "output", "intermediate")
+    os.makedirs(output_dir, exist_ok=True)
+    labeled_image_path = os.path.join(output_dir, output_filename)
+    
     cv2.imwrite(labeled_image_path, img)
     return labeled_image_path
 
@@ -131,11 +144,12 @@ def draw_bounding_boxes(image_path, filtered_objects):
         padding = 5
 
         # Draw rounded rectangle for bounding box
-        draw_rounded_rectangle(draw, [x1, y1, x2, y2], radius, outline_color, outline_width)
+        draw.rounded_rectangle([x1, y1, x2, y2], radius=radius, outline=outline_color, width=outline_width)
 
         # Calculate text size
-        text_size = draw.textsize(lbl, font=font)
-        text_width, text_height = text_size
+        left, top, right, bottom = draw.textbbox((0, 0), lbl, font=font)
+        text_width = right - left
+        text_height = bottom - top
 
         # Position for label box
         label_box = [x1, y1 - text_height - 2 * padding, x1 + text_width + 2 * padding, y1]
