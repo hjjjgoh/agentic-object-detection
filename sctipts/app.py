@@ -29,7 +29,7 @@ def run_detect_pipeline(input_image, user_request):  # input_image: PIL.Image
     temp_path = "temp_input_for_gradio.jpg"
     input_image.save(temp_path)
 
-    # 파이프라인 셋업
+    # pipeline setup
     vlm_tool = VLMTool(api_key=os.getenv("OPENAI_API_KEY"))
     object_detection_tool = ObjectDetectionTool(
         model_id=MODEL_TYPES[DEFAULT_DETECTOR],
@@ -40,22 +40,24 @@ def run_detect_pipeline(input_image, user_request):  # input_image: PIL.Image
         initial_critique_model=CRITIQUE_VLM,
         final_critique_model=VALIDATION_VLM,
     )
-    # 파이프라인 실행
+    # run pipeline
     final_img, _ = object_detection_tool.run(temp_path, user_request)
 
-    # (선택) 임시 파일 삭제
+    # image file delete after execution of pipeline
     try:
         os.remove(temp_path)
     except: pass
 
-    # Gradio는 PIL.Image를 반환하는 것이 가장 직관적임
     return final_img  
 
+# gradio app interfae setting 
 app = gr.Interface(
     fn=run_detect_pipeline,
     inputs=[gr.Image(type="pil"), gr.Textbox(label="User Request")],
-    outputs=gr.Image(type="pil", label="Detection Result"),
+    outputs=[gr.Image(type="pil", label="Detection Result")],
     title="Agentic Object Detection",
+
     theme=gr.themes.Monochrome(),
+    # 예시 이미지 및 예시 User Request 문구 추가
 )
 app.launch()
