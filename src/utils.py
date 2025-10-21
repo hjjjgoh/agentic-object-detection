@@ -6,14 +6,16 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 
-def encode_image(image_path):
-    try:
-        with open(image_path, "rb") as image_file:
+# b64 encoder: jpg image -> base64 string / VLM API
+def encode_image_to_base64(img_path):
+    try: 
+        with open(img_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
     except Exception as e:
-        print(f"Error encoding image: {e}")
+        print(f"Error encoding image.: {e}")
         return None
 
+# 화살표, 숫자 표시
 def draw_arrows_and_numbers(image_path, detected_objects):
     """
     Draws arrows and numbers on an image to label detected objects.
@@ -74,17 +76,15 @@ def draw_arrows_and_numbers(image_path, detected_objects):
     # Create dynamic output path based on input image path
     base_name = os.path.basename(image_path)
     name_part, ext_part = os.path.splitext(base_name)
-    output_filename = f"{name_part}_intermediate{ext_part}"
+    output_filename = f"labeled_objects_{name_part}{ext_part}"
     
-    # Correctly construct the path to save in the project's output/intermediate directory
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    output_dir = os.path.join(project_root, "output", "intermediate")
+    # Correctly construct the path relative to the notebook's location
+    output_dir = os.path.join(os.getcwd(), "output", "intermediate")
     os.makedirs(output_dir, exist_ok=True)
     labeled_image_path = os.path.join(output_dir, output_filename)
     
     cv2.imwrite(labeled_image_path, img)
     return labeled_image_path
-
     
 def load_image(image_input):
     if isinstance(image_input, str):  # Path
