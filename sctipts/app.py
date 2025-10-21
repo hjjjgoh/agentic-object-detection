@@ -3,8 +3,10 @@
 import gradio as gr
 import os
 import sys
+
 from dotenv import load_dotenv
 from PIL import Image
+
 
 # 프로젝트 루트 추가
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,23 +43,30 @@ def run_detect_pipeline(input_image, user_request):  # input_image: PIL.Image
         final_critique_model=VALIDATION_VLM,
     )
     # run pipeline
-    final_img, _ = object_detection_tool.run(temp_path, user_request)
+    final_img, processed_text = object_detection_tool.run(temp_path, user_request)
 
     # image file delete after execution of pipeline
     try:
         os.remove(temp_path)
     except: pass
+    return final_img, processed_text  
 
-    return final_img  
 
-# gradio app interfae setting 
+# gradio app interfae setting
 app = gr.Interface(
     fn=run_detect_pipeline,
     inputs=[gr.Image(type="pil"), gr.Textbox(label="User Request")],
-    outputs=[gr.Image(type="pil", label="Detection Result")],
-    title="Agentic Object Detection",
-
+    outputs=[
+        gr.Image(type="pil", label="Detection Result"),
+        gr.Textbox(label="Processed Text", interactive=False)
+    ],
+    title="Object Detection Agent",
+    description="Upload an image and describe what objects you want to detect. The AI will find and validate the objects for you.",
+    examples=[
+        ["data/image1.jpg", "Detect the green tomatoes hidden by leaves."],
+        ["data/image6.jpg", "Detect the bottom yellow tomatoes."],
+        ["data/image7.jpg", "Detect the top left ipod and the bottom right iphone."]
+    ],
     theme=gr.themes.Monochrome(),
-    # 예시 이미지 및 예시 User Request 문구 추가
 )
 app.launch()
